@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A-Node™ · Find the Sites Everyone Else Misses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+:root {
+  --bg: #080808;
+  --surface: #111;
+  --card: #0f0f0f;
+  --border: rgba(255,255,255,.07);
+  --border-mid: rgba(255,255,255,.13);
+  --muted: rgba(255,255,255,.35);
+  --mid: rgba(255,255,255,.58);
+  --text: rgba(255,255,255,.90);
+  --white: #fff;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  background: rgba(8,8,8,.88);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { font-weight: 600; font-size: 16px; color: var(--white); }
+.nav-logo sup { font-size: 9px; color: var(--muted); font-weight: 400; }
+.nav-links { display: flex; gap: 32px; }
+.nav-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .2s; }
+.nav-links a:hover { color: var(--white); }
+.nav-right { display: flex; gap: 10px; align-items: center; }
+.btn-sm {
+  font-size: 13px; font-weight: 500; padding: 7px 18px; border-radius: 6px;
+  cursor: pointer; text-decoration: none; transition: all .2s; display: inline-flex; align-items: center;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-sm.ghost { background: transparent; color: var(--mid); border: 1px solid var(--border); }
+.btn-sm.ghost:hover { border-color: var(--border-mid); color: var(--white); }
+.btn-sm.solid { background: var(--white); color: #000; border: 1px solid var(--white); }
+.btn-sm.solid:hover { background: rgba(255,255,255,.88); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 100px 24px 80px;
+  position: relative; overflow: hidden;
+}
+.hero-lines {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.024) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.024) 1px, transparent 1px);
+  background-size: 100px 100px;
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%);
+}
+.hero-content { position: relative; z-index: 1; max-width: 860px; }
+.hero-kicker {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 44px;
+  opacity: 0; animation: up .6s .05s ease forwards;
+}
+.hero-statement {
+  margin-bottom: 48px;
+  opacity: 0; animation: up .7s .15s ease forwards;
+}
+.hero-line-1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(36px, 5.5vw, 68px);
+  font-weight: 400; line-height: 1.05; letter-spacing: -.025em;
+  color: rgba(255,255,255,.42);
+  display: block; margin-bottom: 4px;
+}
+.hero-line-2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(36px, 5.5vw, 68px);
+  font-weight: 400; line-height: 1.05; letter-spacing: -.025em;
+  color: var(--white);
+  display: block;
+}
+.hero-line-2 em { font-style: italic; }
+.hero-desc {
+  font-size: clamp(16px, 1.8vw, 18px); font-weight: 300;
+  color: var(--muted); line-height: 1.7; max-width: 500px; margin: 0 auto 44px;
+  opacity: 0; animation: up .7s .3s ease forwards;
+}
+.hero-desc strong { color: rgba(255,255,255,.72); font-weight: 500; }
+.hero-cta {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  opacity: 0; animation: up .7s .44s ease forwards;
+}
+.btn-lg {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 600; padding: 13px 30px; border-radius: 8px;
+  cursor: pointer; text-decoration: none; transition: all .22s; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-lg.solid { background: var(--white); color: #000; }
+.btn-lg.solid:hover { background: rgba(255,255,255,.88); transform: translateY(-1px); }
+.btn-lg.ghost { background: transparent; color: var(--mid); border: 1px solid var(--border-mid); }
+.btn-lg.ghost:hover { border-color: rgba(255,255,255,.25); color: var(--white); }
+.hero-legal {
+  margin-top: 24px; font-family: 'DM Mono', monospace;
+  font-size: 10px; color: rgba(255,255,255,.16); letter-spacing: .06em;
+  opacity: 0; animation: up .6s .58s ease forwards;
+}
+@keyframes up { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+
+.divider { height: 1px; background: var(--border); }
+
+/* ── PROBLEM STATEMENT ── */
+.problem {
+  padding: 96px 48px;
+  max-width: 1280px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+}
+.problem-text {}
+.mono-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 20px;
+}
+.problem-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 3.5vw, 42px); font-weight: 400;
+  letter-spacing: -.02em; line-height: 1.15; color: var(--white); margin-bottom: 20px;
+}
+.problem-heading em { font-style: italic; color: var(--mid); }
+.problem-body {
+  font-size: 16px; font-weight: 300; color: var(--muted); line-height: 1.75; max-width: 420px;
+}
+.problem-body p + p { margin-top: 14px; }
+.problem-body strong { color: rgba(255,255,255,.70); font-weight: 500; }
+.pain-list {
+  list-style: none; display: flex; flex-direction: column; gap: 0;
+  border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.pain-item {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; gap: 16px; align-items: flex-start;
+  transition: background .2s;
+}
+.pain-item:last-child { border-bottom: none; }
+.pain-item:hover { background: rgba(255,255,255,.02); }
+.pain-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: rgba(255,255,255,.20); flex-shrink: 0; margin-top: 3px;
+}
+.pain-text { font-size: 15px; font-weight: 300; color: rgba(255,255,255,.60); line-height: 1.5; }
+.pain-text strong { color: rgba(255,255,255,.82); font-weight: 500; }
+
+/* ── ENGINES ── */
+.engines { padding: 96px 48px; max-width: 1280px; margin: 0 auto; }
+.engines-header { margin-bottom: 56px; }
+.section-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 3.5vw, 44px); font-weight: 400;
+  letter-spacing: -.02em; line-height: 1.12; color: var(--white); margin-bottom: 12px;
+}
+.section-sub { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.6; max-width: 460px; }
+
+/* Asymmetric grid: reverse bigger */
+.engines-layout {
+  display: grid;
+  grid-template-columns: 5fr 4fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.engine-panel {
+  border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+  background: var(--card); transition: border-color .3s;
+}
+.engine-panel:hover { border-color: var(--border-mid); }
+.engine-panel.reverse-panel { border-color: rgba(255,255,255,.10); }
+
+.engine-header { padding: 36px 36px 28px; border-bottom: 1px solid var(--border); }
+.engine-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); padding: 4px 10px; border-radius: 4px;
+  border: 1px solid var(--border); display: inline-block; margin-bottom: 20px;
+}
+.engine-panel.reverse-panel .engine-badge {
+  color: rgba(255,255,255,.55); border-color: rgba(255,255,255,.14);
+}
+.engine-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 30px; font-weight: 400; letter-spacing: -.02em; line-height: 1.1;
+  color: var(--white); margin-bottom: 8px;
+}
+.engine-panel.reverse-panel .engine-title { font-size: 34px; }
+.engine-title em { font-style: italic; }
+.engine-tagline { font-size: 13px; color: var(--muted); font-weight: 300; line-height: 1.5; margin-bottom: 20px; }
+.engine-features { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.engine-features li {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 13px; color: rgba(255,255,255,.52); line-height: 1.45;
+}
+.engine-features li::before {
+  content: '—'; color: rgba(255,255,255,.18); flex-shrink: 0;
+  font-family: 'DM Mono', monospace; font-size: 11px; margin-top: 1px;
+}
+
+/* PREVIEW */
+.engine-preview { padding: 28px; background: #070707; }
+.preview-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(255,255,255,.20); margin-bottom: 14px;
+}
+
+/* forward mock */
+.mock-verdict { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.mock-pill {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 4px; border: 1px solid;
+}
+.mock-pill.pass { border-color: rgba(255,255,255,.22); color: rgba(255,255,255,.72); background: rgba(255,255,255,.04); }
+.mock-pill.fail { border-color: rgba(255,80,80,.28); color: rgba(255,120,120,.78); background: rgba(255,50,50,.05); }
+.mock-pill.warn { border-color: rgba(200,200,80,.22); color: rgba(220,220,100,.72); background: rgba(200,200,50,.04); }
+.mock-pill.neutral { border-color: var(--border); color: var(--muted); }
+.mock-kpis { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-bottom: 12px; }
+.mock-kpi {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 11px 11px 9px;
+}
+.mock-kpi-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px;
+}
+.mock-kpi-val { font-family: 'DM Mono', monospace; font-size: 17px; font-weight: 500; color: var(--white); line-height: 1; }
+.mock-kpi-sub { font-size: 10px; color: var(--muted); margin-top: 3px; }
+.mock-wif-header {
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .10em; text-transform: uppercase;
+  color: rgba(255,255,255,.20); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.mock-wif-header::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.06); }
+.mock-wif-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mock-wif-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 7px;
+  padding: 9px 10px; border-left: 2px solid rgba(255,255,255,.14);
+}
+.mock-wif-tag {
+  font-family: 'DM Mono', monospace; font-size: 8px; color: rgba(255,255,255,.24);
+  letter-spacing: .06em; text-transform: uppercase; margin-bottom: 3px;
+}
+.mock-wif-val { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: rgba(255,255,255,.82); line-height: 1; }
+.mock-wif-desc { font-size: 10px; color: var(--muted); margin-top: 2px; line-height: 1.35; }
+
+/* reverse mock */
+.mock-search-bar {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 7px;
+  padding: 10px 14px; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.mock-search-icon { font-size: 13px; opacity: .35; }
+.mock-search-text { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,.35); }
+.mock-search-tag {
+  margin-left: auto; font-family: 'DM Mono', monospace; font-size: 9px;
+  color: rgba(255,255,255,.30); padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border);
+}
+.mock-criteria-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 14px; }
+.mock-crit {
+  font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: .05em;
+  padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--surface);
+}
+.mock-crit.on { color: rgba(255,255,255,.72); border-color: rgba(255,255,255,.18); }
+.mock-results-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+}
+.mock-results-label { font-family: 'DM Mono', monospace; font-size: 9px; color: rgba(255,255,255,.22); letter-spacing: .10em; text-transform: uppercase; }
+.mock-results-count { font-family: 'DM Mono', monospace; font-size: 9px; color: rgba(255,255,255,.20); padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); }
+.mock-site-list { display: flex; flex-direction: column; gap: 5px; }
+.mock-site-row {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 11px 13px; transition: border-color .2s;
+}
+.mock-site-row:hover { border-color: var(--border-mid); }
+.mock-rank { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,.20); width: 16px; flex-shrink: 0; }
+.mock-site-info { flex: 1; min-width: 0; }
+.mock-addr { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.78); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+.mock-meta { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: .04em; }
+.mock-score-col { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex-shrink: 0; }
+.mock-score-num { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: rgba(255,255,255,.88); line-height: 1; }
+.mock-score-bar { width: 52px; height: 2px; border-radius: 2px; background: rgba(255,255,255,.08); overflow: hidden; }
+.mock-score-fill { height: 100%; border-radius: 2px; background: rgba(255,255,255,.45); }
+.alpha-legend {
+  margin-top: 10px; padding: 8px 12px;
+  background: rgba(255,255,255,.02); border: 1px solid var(--border); border-radius: 6px;
+  font-family: 'DM Mono', monospace; font-size: 9px; color: rgba(255,255,255,.28);
+  letter-spacing: .04em; line-height: 1.6;
+}
+.alpha-legend strong { color: rgba(255,255,255,.45); }
+
+.engine-footer {
+  padding: 17px 27px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.engine-status { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: .06em; }
+.engine-link {
+  font-size: 13px; font-weight: 500; color: var(--white);
+  text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: gap .2s;
+}
+.engine-link:hover { gap: 10px; }
+
+/* ── WHAT-IF SECTION ── */
+.whatif-section { padding: 96px 48px; max-width: 1280px; margin: 0 auto; }
+.whatif-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; margin-top: 52px; }
+.wif-cards { display: flex; flex-direction: column; gap: 9px; }
+.wif-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px;
+  border-left: 2px solid rgba(255,255,255,.14);
+  opacity: 0; transform: translateX(16px);
+  transition: opacity .5s, transform .5s, border-color .2s;
+}
+.wif-card.v { opacity: 1; transform: translateX(0); }
+.wif-card:hover { border-color: var(--border-mid); }
+.wif-type { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: .10em; text-transform: uppercase; margin-bottom: 5px; }
+.wif-title { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.82); margin-bottom: 3px; }
+.wif-val { font-family: 'DM Mono', monospace; font-size: 19px; font-weight: 500; color: var(--white); line-height: 1; margin-bottom: 5px; }
+.wif-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+
+/* ── WORKFLOW ── */
+.workflow-section { border-top: 1px solid var(--border); padding: 96px 48px; }
+.workflow-inner { max-width: 1280px; margin: 0 auto; }
+.workflow-steps {
+  display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 48px;
+  border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.ws {
+  padding: 28px 22px; border-right: 1px solid var(--border); transition: background .2s; position: relative;
+}
+.ws:last-child { border-right: none; }
+.ws:hover { background: rgba(255,255,255,.02); }
+.ws-num { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,.18); margin-bottom: 18px; }
+.ws-icon { font-size: 18px; margin-bottom: 10px; display: block; }
+.ws-title { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: 6px; line-height: 1.3; }
+.ws-desc { font-size: 11px; color: var(--muted); line-height: 1.55; }
+.ws-bar { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: rgba(255,255,255,.16); }
+
+/* ── CONCIERGE CTA ── */
+.concierge {
+  border-top: 1px solid var(--border);
+  padding: 96px 48px;
+}
+.concierge-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+}
+.concierge-text {}
+.concierge-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 3.5vw, 44px); font-weight: 400;
+  line-height: 1.12; letter-spacing: -.022em; color: var(--white); margin-bottom: 16px;
+}
+.concierge-heading em { font-style: italic; color: var(--mid); }
+.concierge-body { font-size: 16px; font-weight: 300; color: var(--muted); line-height: 1.7; max-width: 420px; margin-bottom: 32px; }
+.concierge-body strong { color: rgba(255,255,255,.72); font-weight: 500; }
+.concierge-card {
+  background: var(--card); border: 1px solid var(--border-mid); border-radius: 16px; padding: 36px 36px 28px;
+}
+.concierge-card-title {
+  font-size: 13px; font-weight: 600; color: rgba(255,255,255,.80); margin-bottom: 6px;
+}
+.concierge-card-sub {
+  font-size: 13px; font-weight: 300; color: var(--muted); line-height: 1.6; margin-bottom: 24px;
+}
+.concierge-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.concierge-option {
+  display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px;
+  background: rgba(255,255,255,.025); border: 1px solid var(--border); border-radius: 8px;
+  cursor: pointer; transition: all .2s;
+}
+.concierge-option:hover { border-color: var(--border-mid); background: rgba(255,255,255,.04); }
+.co-icon { font-size: 18px; flex-shrink: 0; }
+.co-text {}
+.co-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.80); margin-bottom: 2px; }
+.co-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.btn-concierge {
+  width: 100%; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 600; padding: 14px 24px; border-radius: 8px;
+  background: var(--white); color: #000; border: none; cursor: pointer;
+  transition: all .22s; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-concierge:hover { background: rgba(255,255,255,.88); transform: translateY(-1px); }
+
+/* ── FINAL CTA ── */
+.final-cta { border-top: 1px solid var(--border); padding: 120px 48px; text-align: center; }
+.final-cta-inner { max-width: 580px; margin: 0 auto; }
+.final-headline {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(34px, 4.5vw, 54px); font-weight: 400;
+  line-height: 1.08; letter-spacing: -.025em; color: var(--white); margin-bottom: 18px;
+}
+.final-headline em { font-style: italic; color: var(--mid); }
+.final-sub { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.65; margin-bottom: 38px; }
+.final-btns { display: flex; align-items: center; justify-content: center; gap: 12px; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border); padding: 34px 48px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+}
+.footer-logo { font-weight: 600; font-size: 14px; color: rgba(255,255,255,.28); }
+.footer-legal { font-size: 11px; color: rgba(255,255,255,.17); max-width: 460px; line-height: 1.55; text-align: right; }
+
+/* ── REVEAL ── */
+.r { opacity:0; transform:translateY(22px); transition: opacity .6s ease, transform .6s ease; }
+.r.v { opacity:1; transform:translateY(0); }
+.r.d1 { transition-delay:.08s; } .r.d2 { transition-delay:.16s; }
+.r.d3 { transition-delay:.24s; } .r.d4 { transition-delay:.32s; }
+
+@media (max-width: 960px) {
+  nav { padding: 0 24px; }
+  .nav-links { display: none; }
+  .problem, .engines-layout, .whatif-layout, .concierge-inner { grid-template-columns: 1fr; }
+  .workflow-steps { grid-template-columns: 1fr; }
+  .ws { border-right: none; border-bottom: 1px solid var(--border); }
+  .ws:last-child { border-bottom: none; }
+  .engines, .whatif-section, .workflow-section, .concierge, .final-cta { padding: 68px 24px; }
+  .problem { padding: 68px 24px; }
+  footer { padding: 28px 24px; }
+  .footer-legal { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">A-Node<sup>™</sup></div>
+  <div class="nav-links">
+    <a href="#reverse">Reverse Engine</a>
+    <a href="#forward">Forward Engine</a>
+    <a href="#how">How it Works</a>
+  </div>
+  <div class="nav-right">
+    <a href="#" class="btn-sm ghost">Sign In</a>
+    <a href="mailto:ieonpark@hotmail.com?subject=A-Node%20Site%20Analysis%20Request&body=Hi%2C%0A%0AI%27d%20like%20to%20request%20an%20A-Node%20analysis.%0A%0A%5B%20%5D%20I%20have%20a%20specific%20site%20%E2%80%94%20Address%3A%20__________________%0A%5B%20%5D%20I%20have%20a%20yield%20target%20%E2%80%94%20Criteria%3A%20__________________%0A" class="btn-sm solid">Request Analysis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-lines"></div>
+  <div class="hero-content">
+    <div class="hero-kicker">Dual-Engine Yield Platform · Atlanta Metro · Patent Pending</div>
+    <div class="hero-statement">
+      <span class="hero-line-1">Most developers look at the same sites.</span>
+      <span class="hero-line-2">A-Node finds the ones <em>they miss.</em></span>
+    </div>
+    <p class="hero-desc">
+      Two precision engines. One to <strong>discover undervalued land</strong> before the market does.
+      One to <strong>squeeze every dollar</strong> from a site you already own.
+    </p>
+    <div class="hero-cta">
+      <a href="#reverse" class="btn-lg solid">
+        Find Overlooked Sites
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="#forward" class="btn-lg ghost">Already Have a Site?</a>
+    </div>
+    <p class="hero-legal">PATENT PENDING · A-NODE PROVIDES PRELIMINARY FEASIBILITY SCREENING ONLY</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROBLEM -->
+<section style="border-bottom: 1px solid var(--border);">
+  <div class="problem">
+    <div class="problem-text">
+      <div class="mono-label r">The Real Problem</div>
+      <h2 class="problem-heading r d1">Good sites aren't<br>listed. They're <em>found.</em></h2>
+      <div class="problem-body r d2">
+        <p>By the time a site hits a broker's list, five other developers have already seen it. The margin is priced in. The opportunity is gone.</p>
+        <p>The developers who consistently <strong>outperform the market</strong> aren't smarter — they're looking at different data, earlier.</p>
+      </div>
+    </div>
+    <ul class="pain-list r d2">
+      <li class="pain-item">
+        <span class="pain-num">01</span>
+        <span class="pain-text"><strong>On-market sites are overpriced.</strong> Everyone's running the same comps on the same parcels.</span>
+      </li>
+      <li class="pain-item">
+        <span class="pain-num">02</span>
+        <span class="pain-text"><strong>Off-market requires relationships</strong> you may not have — or time you don't.</span>
+      </li>
+      <li class="pain-item">
+        <span class="pain-num">03</span>
+        <span class="pain-text"><strong>Zoning gaps are invisible</strong> without deep GIS work. Most teams skip it.</span>
+      </li>
+      <li class="pain-item">
+        <span class="pain-num">04</span>
+        <span class="pain-text"><strong>You already have a site</strong> but don't know if you're leaving units — or yield — on the table.</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ENGINES -->
+<section class="engines" id="engines">
+  <div class="engines-header">
+    <div class="mono-label r">Two Engines. Two Modes.</div>
+    <h2 class="section-heading r d1">Built for every side of the deal.</h2>
+    <p class="section-sub r d2">Set your target return and let A-Node surface the sites — or hand us an address and we'll tell you exactly what it can become.</p>
+  </div>
+
+  <div class="engines-layout">
+
+    <!-- REVERSE ENGINE — bigger, left, first -->
+    <div class="engine-panel reverse-panel r d1" id="reverse">
+      <div class="engine-header">
+        <div class="engine-badge">Reverse Engine — Alpha Discovery</div>
+        <div class="engine-title">The market sees the obvious sites.<br><em>A-Node finds the overlooked ones.</em></div>
+        <p class="engine-tagline">Set your yield target. A-Node scans parcels across Atlanta Metro — FAR gap, land basis, improvement ratio, zoning upside — and surfaces the ones no one is looking at yet.</p>
+        <ul class="engine-features">
+          <li>Target yield → best-fit site discovery (not just filtering)</li>
+          <li>FAR gap analysis: find parcels massively underbuilt for their zoning</li>
+          <li>Land basis signal: flag sites where value hasn't caught up to potential</li>
+          <li>Improvement ratio scoring: identify underutilized vs. ripe-for-redevelopment</li>
+          <li>Multi-parcel batch screen with alpha-ranked export</li>
+        </ul>
+      </div>
+      <div class="engine-preview">
+        <div class="preview-label">Reverse Engine · Best-Match Results</div>
+        <div class="mock-search-bar">
+          <span class="mock-search-icon">◎</span>
+          <span class="mock-search-text">Target: YOC ≥ 6.0% · LIHTC 9% · Fulton County</span>
+          <span class="mock-search-tag">247 scanned</span>
+        </div>
+        <div class="mock-criteria-row">
+          <span class="mock-crit on">YOC ≥ 6%</span>
+          <span class="mock-crit on">FAR gap ≥ 1.5</span>
+          <span class="mock-crit on">Unimproved</span>
+          <span class="mock-crit">≥ 0.5 acres</span>
+          <span class="mock-crit on">R-4A / MRC</span>
+        </div>
+        <div class="mock-results-header">
+          <div class="mock-results-label">Ranked by Alpha Score</div>
+          <div class="mock-results-count">14 qualifying</div>
+        </div>
+        <div class="mock-site-list">
+          <div class="mock-site-row">
+            <div class="mock-rank">01</div>
+            <div class="mock-site-info">
+              <div class="mock-addr">[Sample Site A] — SW Atlanta</div>
+              <div class="mock-meta">C-2 · 0.82 ac · FAR gap 2.4 · land $118/sf · YOC est. 7.1%</div>
+            </div>
+            <div class="mock-score-col">
+              <div class="mock-score-num">94</div>
+              <div class="mock-score-bar"><div class="mock-score-fill" style="width:94%"></div></div>
+            </div>
+          </div>
+          <div class="mock-site-row">
+            <div class="mock-rank">02</div>
+            <div class="mock-site-info">
+              <div class="mock-addr">[Sample Site B] — West End</div>
+              <div class="mock-meta">MRC-3 · 1.1 ac · FAR gap 3.1 · land $94/sf · YOC est. 6.8%</div>
+            </div>
+            <div class="mock-score-col">
+              <div class="mock-score-num">91</div>
+              <div class="mock-score-bar"><div class="mock-score-fill" style="width:91%"></div></div>
+            </div>
+          </div>
+          <div class="mock-site-row">
+            <div class="mock-rank">03</div>
+            <div class="mock-site-info">
+              <div class="mock-addr">[Sample Site C] — South Fulton</div>
+              <div class="mock-meta">R-4A · 2.3 ac · FAR gap 1.8 · land $72/sf · YOC est. 6.4%</div>
+            </div>
+            <div class="mock-score-col">
+              <div class="mock-score-num">87</div>
+              <div class="mock-score-bar"><div class="mock-score-fill" style="width:87%"></div></div>
+            </div>
+          </div>
+          <div class="mock-site-row">
+            <div class="mock-rank">04</div>
+            <div class="mock-site-info">
+              <div class="mock-addr">[Sample Site D] — Mechanicsville</div>
+              <div class="mock-meta">I-1 → Rezone candidate · 1.6 ac · land $61/sf · YOC est. 6.2%</div>
+            </div>
+            <div class="mock-score-col">
+              <div class="mock-score-num">82</div>
+              <div class="mock-score-bar"><div class="mock-score-fill" style="width:82%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="alpha-legend">
+          <strong>Alpha Score</strong> = FAR gap (unused zoning capacity) + yield lift vs. land basis + improvement ratio signal.<br>
+          Higher = more upside relative to current market awareness.<br>
+          <span style="color:rgba(255,255,255,.18)">⚠ Addresses, scores, and figures shown are illustrative only. Not real parcels, not real data. For demonstration purposes only.</span>
+        </div>
+      </div>
+      <div class="engine-footer">
+        <span class="engine-status">14 qualifying parcels · Updated today</span>
+        <a href="#concierge" class="engine-link">
+          Find My Sites
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- FORWARD ENGINE — right, slightly smaller -->
+    <div class="engine-panel r d2" id="forward">
+      <div class="engine-header">
+        <div class="engine-badge">Forward Engine — Maximize Returns</div>
+        <div class="engine-title">You have the site.<br><em>Now squeeze it.</em></div>
+        <p class="engine-tagline">Enter an address and A-Node runs the full analysis — then tells you exactly what to change to maximize your return. What-If isn't a feature. It's the point.</p>
+        <ul class="engine-features">
+          <li>Full physical envelope: FAR, height, parking, unit mix</li>
+          <li>LIHTC 9%, LIHTC 4%, Market Rate, Mixed-Use</li>
+          <li>Capital stack: YOC, DSCR, funding gap, QAP score</li>
+          <li>Auto What-If: rent uplift, density push, VE, basis boost</li>
+        </ul>
+      </div>
+      <div class="engine-preview">
+        <div class="preview-label">Forward Engine · Step 5 Output + What-If</div>
+        <div class="mock-verdict">
+          <span class="mock-pill pass">✓ Physical</span>
+          <span class="mock-pill pass">✓ Program</span>
+          <span class="mock-pill neutral">87 units</span>
+          <span class="mock-pill warn">Gap $2.1M</span>
+        </div>
+        <div class="mock-kpis">
+          <div class="mock-kpi">
+            <div class="mock-kpi-label">YOC</div>
+            <div class="mock-kpi-val">6.2%</div>
+            <div class="mock-kpi-sub">Target 5.5%</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="mock-kpi-label">DSCR</div>
+            <div class="mock-kpi-val">1.34x</div>
+            <div class="mock-kpi-sub">Min 1.20x</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="mock-kpi-label">NOI</div>
+            <div class="mock-kpi-val">$612k</div>
+            <div class="mock-kpi-sub">QAP 71/100</div>
+          </div>
+        </div>
+        <div class="mock-wif-header">What-If · Auto-Generated</div>
+        <div class="mock-wif-grid">
+          <div class="mock-wif-card">
+            <div class="mock-wif-tag">Rent +5%</div>
+            <div class="mock-wif-val">6.8% YOC</div>
+            <div class="mock-wif-desc">NOI $612k→$643k</div>
+          </div>
+          <div class="mock-wif-card">
+            <div class="mock-wif-tag">+9 units</div>
+            <div class="mock-wif-val">Density push</div>
+            <div class="mock-wif-desc">Within envelope</div>
+          </div>
+          <div class="mock-wif-card">
+            <div class="mock-wif-tag">VE −5%</div>
+            <div class="mock-wif-val">$442k saved</div>
+            <div class="mock-wif-desc">TDC $9.8→$9.3M</div>
+          </div>
+          <div class="mock-wif-card">
+            <div class="mock-wif-tag">QCT Boost</div>
+            <div class="mock-wif-val">+$380k equity</div>
+            <div class="mock-wif-desc">Gap closes</div>
+          </div>
+        </div>
+      </div>
+      <div class="engine-footer">
+        <span class="engine-status">[Sample Site] · LIHTC 9% · Illustrative only</span>
+        <a href="#concierge" class="engine-link">
+          Analyze My Site
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WHAT-IF DEEP DIVE -->
+<section class="whatif-section">
+  <div class="whatif-layout">
+    <div>
+      <div class="mono-label r">Forward Engine · What-If</div>
+      <h2 class="section-heading r d1">The analysis doesn't<br>just score your site.<br><em>It tells you what to do.</em></h2>
+      <p class="section-sub r d2" style="margin-top:16px; margin-bottom:28px;">Every result automatically generates the exact levers to pull — whether your deal is failing or you want to push a passing deal further.</p>
+      <ul class="engine-features r d3" style="max-width:380px;">
+        <li>Failing YOC? Exact rent PSF or cost cut required — to the dollar</li>
+        <li>Physical fail? Parcel assembly acreage back-calculated for you</li>
+        <li>LIHTC gap? QCT basis boost and soft loan paths surfaced automatically</li>
+        <li>Passing? Density push, VE savings, and rent uplift all projected</li>
+      </ul>
+    </div>
+    <div class="wif-cards">
+      <div class="wif-card">
+        <div class="wif-type">YOC Fail · Fix Option 1</div>
+        <div class="wif-title">Rent increase required to hit target YOC</div>
+        <div class="wif-val">+8.4% rents needed</div>
+        <div class="wif-desc">$1.42/SF/mo → $1.54/SF/mo. NOI gap: $74,200. Strategy: amenity upgrades, lease renewals.</div>
+      </div>
+      <div class="wif-card">
+        <div class="wif-type">YOC Fail · Fix Option 2</div>
+        <div class="wif-title">Maximum allowable total dev cost</div>
+        <div class="wif-val">−$1.2M TDC</div>
+        <div class="wif-desc">Max TDC at current NOI: $9.1M. Hard cost target: $188/SF (currently $198/SF).</div>
+      </div>
+      <div class="wif-card">
+        <div class="wif-type">Maximize · Density Push</div>
+        <div class="wif-title">Add units within existing physical envelope</div>
+        <div class="wif-val">6.8% YOC · +9 units</div>
+        <div class="wif-desc">+$885k added cost · +$28k NOI. Physical capacity confirmed in Step 4.</div>
+      </div>
+      <div class="wif-card">
+        <div class="wif-type">Maximize · LIHTC Basis Boost</div>
+        <div class="wif-title">QCT/DDA designation → 130% eligible basis</div>
+        <div class="wif-val">+$380k credit equity</div>
+        <div class="wif-desc">Funding gap closes. Verify site qualification on CDFI/HUD QCT map.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WORKFLOW -->
+<section class="workflow-section" id="how">
+  <div class="workflow-inner">
+    <div class="mono-label r">Forward Engine · 5 Steps</div>
+    <h2 class="section-heading r d1">From address to answer.</h2>
+    <div class="workflow-steps">
+      <div class="ws"><div class="ws-bar"></div><div class="ws-num">01</div><span class="ws-icon">📍</span><div class="ws-title">Site Selection</div><div class="ws-desc">GIS parcel lookup. Zoning, area, context loaded instantly.</div></div>
+      <div class="ws"><div class="ws-num">02</div><span class="ws-icon">🏗</span><div class="ws-title">Scenario</div><div class="ws-desc">Residential, Commercial, or Mixed-Use.</div></div>
+      <div class="ws"><div class="ws-num">03</div><span class="ws-icon">📋</span><div class="ws-title">Program</div><div class="ws-desc">LIHTC 9%, LIHTC 4%, Market Rate, Mixed-Use.</div></div>
+      <div class="ws"><div class="ws-num">04</div><span class="ws-icon">📐</span><div class="ws-title">Analysis</div><div class="ws-desc">FAR, parking, height, unit mix. Full physical check.</div></div>
+      <div class="ws"><div class="ws-bar"></div><div class="ws-num">05</div><span class="ws-icon">💰</span><div class="ws-title">Financial + What-If</div><div class="ws-desc">YOC, DSCR, capital stack, QAP, auto What-If paths.</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONCIERGE CTA -->
+<section class="concierge" id="concierge">
+  <div class="concierge-inner">
+    <div class="concierge-text">
+      <div class="mono-label r">White-Glove Analysis</div>
+      <h2 class="concierge-heading r d1">Send us a site<br>or a target.<br><em>We'll run A-Node.</em></h2>
+      <p class="concierge-body r d2">
+        Not ready to use the platform yourself? <strong>Send us an address or your return criteria</strong> and our team will run A-Node and deliver the full report.
+        No software. No learning curve.
+      </p>
+    </div>
+    <div class="concierge-card r d2">
+      <div class="concierge-card-title">Request a Site Analysis</div>
+      <div class="concierge-card-sub">Choose what you need — we'll send the A-Node report within 24 hours.</div>
+      <div class="concierge-options">
+        <div class="concierge-option">
+          <span class="co-icon">📍</span>
+          <div class="co-text">
+            <div class="co-title">I have a specific site</div>
+            <div class="co-desc">Send us the address. We run the Forward Engine — full feasibility + What-If paths.</div>
+          </div>
+        </div>
+        <div class="concierge-option">
+          <span class="co-icon">◎</span>
+          <div class="co-text">
+            <div class="co-title">I have a yield target</div>
+            <div class="co-desc">Tell us your criteria. We run the Reverse Engine and send ranked site candidates.</div>
+          </div>
+        </div>
+      </div>
+      <a href="mailto:ieonpark@hotmail.com?subject=A-Node%20Site%20Analysis%20Request&body=Hi%2C%0A%0AI%27d%20like%20to%20request%20an%20A-Node%20analysis.%0A%0A%5B%20%5D%20I%20have%20a%20specific%20site%20%E2%80%94%20Address%3A%20__________________%0A%5B%20%5D%20I%20have%20a%20yield%20target%20%E2%80%94%20Criteria%3A%20__________________%0A%0AProgram%20type%20(LIHTC%209%25%2C%20LIHTC%204%25%2C%20Market%20Rate%2C%20Mixed-Use)%3A%0AAdditional%20notes%3A" class="btn-concierge">
+        Request Site Analysis
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="final-cta-inner">
+    <h2 class="final-headline r">Don't just find sites.<br><em>Architect your profit.</em></h2>
+    <p class="final-sub r d1">Platform access by request. Demo mode available to qualified developers and investors in Atlanta Metro.</p>
+    <div class="final-btns r d2">
+      <a href="mailto:ieonpark@hotmail.com?subject=A-Node%20Access%20Request&body=Hi%2C%0A%0AI%27d%20like%20to%20request%20access%20to%20the%20A-Node%20platform.%0A%0AName%3A%0ACompany%3A%0AUse%20case%3A" class="btn-lg solid">
+        Request Access
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="#engines" class="btn-lg ghost">See the Engines</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">A-Node™ · Dual-Engine Yield Platform</div>
+  <div class="footer-legal">Patent Pending. A-Node provides preliminary feasibility screening only. All figures are estimates and users should independently verify zoning and financial assumptions. This tool does not offer, market, or broker real estate.</div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){ e.target.classList.add('v'); obs.unobserve(e.target); }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.r, .wif-card').forEach(el => obs.observe(el));
+document.querySelectorAll('.wif-card').forEach((el, i) => {
+  el.style.transitionDelay = (i * 90) + 'ms';
+});
+
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    if(!id) return;
+    const el = document.getElementById(id);
+    if(el){ e.preventDefault(); el.scrollIntoView({ behavior:'smooth', block:'start' }); }
+  });
+});
+</script>
+</body>
+</html>
